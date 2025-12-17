@@ -1,4 +1,11 @@
 import sys
+import io
+
+# Fix for Windows encoding issue - add this at the top
+if sys.platform == "win32":
+    # Force stdout to use UTF-8
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
 
 class MouseCrashedError(Exception):
     pass
@@ -18,8 +25,6 @@ def mazeWidth():
 
 def togglePause():
     return command(args=["togglePause"], return_type=str)
-
-
 
 def mazeHeight():
     return command(args=["mazeHeight"], return_type=int)
@@ -106,6 +111,14 @@ def clearAllColor():
     command(args=["clearAllColor"])
 
 def setText(x, y, text):
+    # Ensure text is properly encoded for Windows
+    if isinstance(text, str) and sys.platform == "win32":
+        # Try to encode as UTF-8, fallback to ASCII if needed
+        try:
+            text.encode('utf-8')
+        except UnicodeEncodeError:
+            # Replace unsupported characters
+            text = text.encode('ascii', errors='replace').decode('ascii')
     command(args=["setText", x, y, text])
 
 def clearText(x, y):

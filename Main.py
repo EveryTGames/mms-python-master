@@ -122,7 +122,7 @@ def astar(start):
                 continue
 
             nx, ny = x + DX[d], y + DY[d]
-            if not (0 <= nx < WIDTH and 0 <= ny < HEIGHT):
+            if not (0 <= nx < WIDTH and 0 <= ny < HEIGHT): #checks if the next grid is inside the maze
                 continue
 
             ng = g + 1
@@ -134,12 +134,45 @@ def astar(start):
 
     return None
 
+# none / (or any another color) 
+'''{
+      {'k', BLACK},       {'b', BLUE},
+      {'a', GRAY},        {'c', CYAN},
+      {'g', GREEN},       {'o', ORANGE},
+      {'r', RED},         {'w', WHITE},
+      {'y', YELLOW},      {'B', DARK_BLUE},
+      {'C', DARK_CYAN},   {'A', DARK_GRAY},
+      {'G', DARK_GREEN},  {'O', DARK_ORANGE},
+      {'R', DARK_RED},    {'V', DARK_VIOLET},
+      {'Y', DARK_YELLOW},
+  }
+'''
+fullColorMap = [[ 'none' for _ in range(HEIGHT)] for _ in range(WIDTH)]
+previousePath = []
+
 def reconstruct_path(came_from, end):
+    global previousePath
+
     path = [end]
     while end in came_from:
         end = came_from[end]
         path.append(end)
     path.reverse()
+
+    if len(previousePath) !=0:
+        for cell in previousePath:
+            x,y = cell
+            if(fullColorMap[cell[0]][cell[1]] == 'none'):
+                API.clearColor(x,y)
+            else:
+                API.setColor(x,y,fullColorMap[cell[0]][cell[1]])
+
+    for cell in path:
+        x,y = cell
+        API.setColor(x,y,'c' )
+
+    previousePath = path
+
     log("planned Path: " + str(path))
     return path
 
@@ -196,14 +229,14 @@ def main():
     log("A* Micromouse running")
 	
   
-    
+    API.setText(0,0,'😁')
 
     
     x, y = 0, 0
     heading = N
 
-    API.setColor(x, y, "G")
-
+    API.setColor(x, y, "g")
+    fullColorMap[x][y] = 'g'
     
     startedBackTracing = False
 
@@ -222,7 +255,8 @@ def main():
         if (nx, ny) not in full_path:
                 startedBackTracing = False
                 full_path.append((nx, ny))
-                API.setColor(nx, ny, "G")
+                API.setColor(nx, ny, "g")
+                fullColorMap[nx][ny] = 'g'
         else:
             if not startedBackTracing:
                 startedBackTracing = True
