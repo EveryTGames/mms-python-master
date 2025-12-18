@@ -10,6 +10,7 @@ def log(s):
 # ---------- Directions ----------
 E, N, W, S = 0, 1, 2, 3
 DIRS = [E, N, W, S]
+commandDIRS = ['e', 'n','w', 's']
 
 DX = {
     E: 1,
@@ -96,6 +97,10 @@ def sense_walls(x, y, heading):
     ]:
         has_wall = api_call()
         walls[x][y][rel_dir] = has_wall
+
+        if(has_wall):
+            API.setWall(x,y,commandDIRS[rel_dir])
+
 
         # Also write the wall to the neighboring cell
         nx = x + DX[rel_dir]
@@ -228,8 +233,6 @@ def main():
 
     log("A* Micromouse running")
 	
-  
-    API.setText(0,0,'😁')
 
     
     x, y = 0, 0
@@ -243,7 +246,7 @@ def main():
     while (x, y) not in TARGETS:
         sense_walls(x, y, heading)
 
-        path = astar((x, y))
+        path = astar((x, y)) #planned path
         if not path or len(path) < 2:
             log("No path found")
             return
