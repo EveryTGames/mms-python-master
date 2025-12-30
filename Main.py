@@ -117,10 +117,10 @@ def astar(start):
     cost = {(sx, sy): 0}
 
     while pq:
-        _, g, x, y = heapq.heappop(pq)
+        _, g, x, y = heapq.heappop(pq) # unpacking the cell from the pq
 
         if (x, y) in TARGETS:
-            return reconstruct_path(came_from, (x, y))
+            return reconstruct_path(came_from, (x, y)) #reconstruct the planned path
 
         for d in DIRS:
             if walls[x][y][d] is True:
@@ -134,6 +134,7 @@ def astar(start):
             if (nx, ny) not in cost or ng < cost[(nx, ny)]:
                 cost[(nx, ny)] = ng
                 f = ng + heuristic(nx, ny)
+                API.setText(nx,ny,f)
                 heapq.heappush(pq, (f, ng, nx, ny))
                 came_from[(nx, ny)] = (x, y)
 
@@ -170,6 +171,7 @@ def reconstruct_path(came_from, end):
             if(fullColorMap[cell[0]][cell[1]] == 'none'):
                 API.clearColor(x,y)
             else:
+                API.setText(x,y,f"{x},{y}")
                 API.setColor(x,y,fullColorMap[cell[0]][cell[1]])
 
     for cell in path:
@@ -215,6 +217,7 @@ def turn_to(current, target):
     return current
 
 def move_step(x, y, heading, nx, ny):
+    API.togglePause()
     for d in DIRS:
         if x + DX[d] == nx and y + DY[d] == ny:
             heading = turn_to(heading, d)
@@ -226,6 +229,9 @@ def move_step(x, y, heading, nx, ny):
 # ---------- Main ----------
 def main():
 
+
+    for target in TARGETS:
+        API.setCheese(target[0],target[1])
     for x in range(WIDTH):
         for y in range(HEIGHT):
             API.setText(x, y, f"{x},{y}")
@@ -244,6 +250,7 @@ def main():
     startedBackTracing = False
 
     while (x, y) not in TARGETS:
+
         sense_walls(x, y, heading)
 
         path = astar((x, y)) #planned path
@@ -266,7 +273,7 @@ def main():
                 API.togglePause()
             # Backtracking
             while full_path[-1] != (nx, ny):
-                bx, by = full_path.pop()
+                full_path.pop()
 
 
 

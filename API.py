@@ -24,6 +24,7 @@ def mazeWidth():
     return command(args=["mazeWidth"], return_type=int)
 
 def togglePause():
+    return
     return command(args=["togglePause"], return_type=str)
 
 def mazeHeight():
@@ -126,6 +127,9 @@ def clearText(x, y):
 
 def clearAllText():
     command(args=["clearAllText"])
+
+def setCheese(x, y):
+    command(args=["setCheese", x, y])
 
 def wasReset():
     return command(args=["wasReset"], return_type=bool)
